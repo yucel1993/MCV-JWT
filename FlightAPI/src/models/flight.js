@@ -58,7 +58,7 @@ const FlightSchema = new mongoose.Schema(
       required: true,
     },
     departure: {
-      type: BigInt,
+      type: Number,
       trim: true,
     },
     departureDate: {
@@ -66,7 +66,7 @@ const FlightSchema = new mongoose.Schema(
       trim: true,
     },
     arrival: {
-      type: BigInt,
+      type: Number,
       trim: true,
     },
     arrivalDate: {

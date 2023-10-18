@@ -57,13 +57,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: true,
-      // validate: [
-      //   (password) =>
-      //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,30}$/.test(
-      //       password
-      //     ) &&
-      //     "Password type is not correct. It should include at least one uppercase letter, one lowercase letter, one digit, and one special character, and be at least 10 characters long.",
-      // ],
+      validate: [
+        (password) =>
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!*]).{8,}$/.test(password) &&
+          "Password type is not correct. It should include at least one uppercase letter, one lowercase letter, one digit, and one special character, and be at least 10 characters long.",
+      ],
       set: (password) => passwordEncrypt(password),
     },
 

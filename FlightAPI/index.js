@@ -57,9 +57,9 @@ app.use("/users", require("./src/routes/user"));
 // reservation:
 app.use("/reservations", require("./src/routes/reservation"));
 // Passenger:
-app.use("/Passengers", require("./src/routes/passenger"));
+app.use("/passengers", require("./src/routes/passenger"));
 // Flight:
-app.use("/Flights", require("./src/routes/flight"));
+app.use("/flights", require("./src/routes/flight"));
 // document:
 app.use("/documents", require("./src/routes/document"));
 
