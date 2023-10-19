@@ -5,45 +5,13 @@
 const { mongoose } = require("../configs/dbConnection");
 /* ------------------------------------------------------- *
 {
-    "username": "test",
-    "password": "1234",
-    "email": "test@site.com",
-    "isActive": true,
-    "isStaff": false,
-    "isAdmin": false,
+    "firstName": "FirstName 1",
+    "lastName": "LastName",
+    "gender": "F",
+    "email": "test1@site.com",
+    "createdId": "65317b1c29b1267920ddf30d"
 }
 /* ------------------------------------------------------- */
-// User Model:
-
-const passwordEncrypt = require("../helpers/passwordEncrypt");
-
-// const passwordValidator = (password) => {
-//   // Regular expression for password validation
-//   const passwordRegex =
-//     /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{10,10}$/;
-
-//   if (!passwordRegex.test(password)) {
-//     let errorMessage = "Password does not meet the criteria. ";
-//     if (!/(?=.*\d)/.test(password)) {
-//       errorMessage += "Number is missing. ";
-//     }
-//     if (!/(?=.*[a-z])/.test(password)) {
-//       errorMessage += "Lowercase letter is missing. ";
-//     }
-//     if (!/(?=.*[A-Z])/.test(password)) {
-//       errorMessage += "Uppercase letter is missing. ";
-//     }
-//     if (!/(?=.*[@#$%^&+=!])/.test(password)) {
-//       errorMessage += "Special character is missing. ";
-//     }
-//     if (password.length < 10) {
-//       errorMessage += "Password length is less than 10 characters. ";
-//     }
-//     throw new Error(errorMessage.trim());
-//   }
-
-//   return true;
-// };
 
 const PassengerSchema = new mongoose.Schema(
   {
@@ -59,11 +27,22 @@ const PassengerSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      trim: true,
+      enum: ["male", "female", null],
+      default: null,
     },
     email: {
       type: String,
       trim: true,
+      required: [true, "Email field must be required"],
+      unique: [true, "There is this email. Email field must be unique"],
+      validate: [
+        (email) => {
+          const emailRegexCheck =
+            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          return emailRegexCheck.test(email);
+        },
+        "Email type is not correct.",
+      ],
     },
 
     createdId: {

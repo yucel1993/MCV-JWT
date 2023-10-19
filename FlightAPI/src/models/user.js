@@ -57,12 +57,16 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: true,
-      validate: [
-        (password) =>
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!*]).{8,}$/.test(password) &&
-          "Password type is not correct. It should include at least one uppercase letter, one lowercase letter, one digit, and one special character, and be at least 10 characters long.",
-      ],
       set: (password) => passwordEncrypt(password),
+      // validate: [
+      //   (password) => {
+      //     console.log(password);
+      //     return (
+      //       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!*]).{8,}$/.test(password) &&
+      //       "Password type is not correct. It should include at least one uppercase letter, one lowercase letter, one digit, and one special character, and be at least 10 characters long."
+      //     );
+      //   },
+      // ],
     },
 
     email: {
@@ -71,7 +75,11 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Email field must be required"],
       unique: [true, "There is this email. Email field must be unique"],
       validate: [
-        (email) => email.includes("@") && email.includes("."),
+        (email) => {
+          const emailRegexCheck =
+            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          return emailRegexCheck.test(email);
+        },
         "Email type is not correct.",
       ],
     },

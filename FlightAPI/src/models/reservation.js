@@ -5,63 +5,44 @@
 const { mongoose } = require("../configs/dbConnection");
 /* ------------------------------------------------------- *
 {
-    "username": "test",
-    "password": "1234",
-    "email": "test@site.com",
-    "isActive": true,
-    "isStaff": false,
-    "isAdmin": false,
-}
+    "flightId": "652cebb3bae9cde5e8a9753b",
+    "passengers": [
+      "652cf408b63b905ad13d9a87",
+      "652cf408b63b905ad13d9a89",
+      {
+        "firstName": "Test 11",
+        "lastName": "Test 11",
+        "email": "test11@site.com"
+      },
+      {
+        "firstName": "Test 12",
+        "lastName": "Test 12",
+        "email": "test12@site.com"
+      },
+    ],
+    "createdId": "652ceaa1bae9cde5e8a97522"
+  }
 /* ------------------------------------------------------- */
-// User Model:
-
-const passwordEncrypt = require("../helpers/passwordEncrypt");
-
-// const passwordValidator = (password) => {
-//   // Regular expression for password validation
-//   const passwordRegex =
-//     /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{10,10}$/;
-
-//   if (!passwordRegex.test(password)) {
-//     let errorMessage = "Password does not meet the criteria. ";
-//     if (!/(?=.*\d)/.test(password)) {
-//       errorMessage += "Number is missing. ";
-//     }
-//     if (!/(?=.*[a-z])/.test(password)) {
-//       errorMessage += "Lowercase letter is missing. ";
-//     }
-//     if (!/(?=.*[A-Z])/.test(password)) {
-//       errorMessage += "Uppercase letter is missing. ";
-//     }
-//     if (!/(?=.*[@#$%^&+=!])/.test(password)) {
-//       errorMessage += "Special character is missing. ";
-//     }
-//     if (password.length < 10) {
-//       errorMessage += "Password length is less than 10 characters. ";
-//     }
-//     throw new Error(errorMessage.trim());
-//   }
-
-//   return true;
-// };
 
 const ReservationSchema = new mongoose.Schema(
   {
     flightId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Flights",
+      required: true,
     },
 
     passengers: [
       // push, pull
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Passengers",
+        ref: "Users",
       },
     ],
     createdId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
+      required: true,
     },
   },
   { collection: "Reservations", timestamps: true }
