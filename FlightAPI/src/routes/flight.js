@@ -7,18 +7,30 @@ const router = require("express").Router();
 // routes/Flight:
 
 const permissions = require("../middlewares/permissions");
-const Flight = require("../controllers/flight");
+const flight = require("../controllers/flight");
 
 // URL: /Flights
+// URL: /flights
 
-router.route("/").get(permissions.isStaff, Flight.list).post(Flight.create);
+// router.route('/')
+//     .get(permissions.isStaffOrAdmin, flight.list)
+//     .post(permissions.isStaffOrAdmin, flight.create)
+
+// router.route('/:id')
+//     .get(permissions.isStaffOrAdmin, flight.read)
+//     .put(permissions.isStaffOrAdmin, flight.update)
+//     .patch(permissions.isStaffOrAdmin, flight.update)
+//     .delete(permissions.isAdmin, flight.delete)
+
+router.use(permissions.isStaffOrAdmin);
+
+router.route("/").get(flight.list).post(flight.create);
 
 router
   .route("/:id")
-  .get(permissions.isLogin, Flight.read)
-  .put(permissions.isLogin, Flight.update)
-  .patch(permissions.isLogin, Flight.update)
-  .delete(permissions.isAdmin, Flight.delete);
-
+  .get(flight.read)
+  .put(flight.update)
+  .patch(flight.update)
+  .delete(permissions.isAdmin, flight.delete);
 /* ------------------------------------------------------- */
 module.exports = router;

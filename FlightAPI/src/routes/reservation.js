@@ -9,18 +9,17 @@ const router = require("express").Router();
 const permissions = require("../middlewares/permissions");
 const Reservation = require("../controllers/reservation");
 
-// URL: /users
+// URL: /reservations
 
-router
-  .route("/")
-  .get(permissions.isAdmin, Reservation.list)
-  .post(Reservation.create);
+router.use(permissions.isStaffOrAdmin);
+
+router.route("/").get(Reservation.list).post(Reservation.create);
 
 router
   .route("/:id")
-  .get(permissions.isLogin, Reservation.read)
-  .put(permissions.isLogin, Reservation.update)
-  .patch(permissions.isLogin, Reservation.update)
+  .get(Reservation.read)
+  .put(Reservation.update)
+  .patch(Reservation.update)
   .delete(permissions.isAdmin, Reservation.delete);
 
 router.put(

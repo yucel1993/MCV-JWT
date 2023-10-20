@@ -33,17 +33,11 @@ module.exports = {
   create: async (req, res) => {
     /*
             #swagger.tags = ["Flights"]
-            #swagger.summary = "Create Flights"
+            #swagger.summary = "Create Flight"
             #swagger.parameters['body'] = {
                 in: 'body',
                 required: true,
                 schema: {
-                    "username": "test",
-                    "password": "1234",
-                    "email": "test@site.com",
-                    "isActive": true,
-                    "isStaff": false,
-                    "isAdmin": false,
                 }
             }
         */
@@ -73,17 +67,11 @@ module.exports = {
   update: async (req, res) => {
     /*
             #swagger.tags = ["Flights"]
-            #swagger.summary = "Update Flights"
+            #swagger.summary = "Update Flight"
             #swagger.parameters['body'] = {
                 in: 'body',
                 required: true,
                 schema: {
-                    "username": "test",
-                    "password": "1234",
-                    "email": "test@site.com",
-                    "isActive": true,
-                    "isStaff": false,
-                    "isAdmin": false,
                 }
             }
         */

@@ -6,22 +6,21 @@ const router = require("express").Router();
 /* ------------------------------------------------------- */
 // routes/Passenger:
 
-const permissions = require("../middlewares/permissions");
-const Passenger = require("../controllers/passenger");
+const { isStaffOrAdmin } = require("../middlewares/permissions");
+const passenger = require("../controllers/passenger");
 
-// URL: /users
+// URL: /passengers
 
-router
-  .route("/")
-  .get(permissions.isAdmin, Passenger.list)
-  .post(Passenger.create);
+router.use(isStaffOrAdmin);
+
+router.route("/").get(passenger.list).post(passenger.create);
 
 router
   .route("/:id")
-  .get(permissions.isLogin, Passenger.read)
-  .put(permissions.isLogin, Passenger.update)
-  .patch(permissions.isLogin, Passenger.update)
-  .delete(permissions.isAdmin, Passenger.delete);
+  .get(passenger.read)
+  .put(passenger.update)
+  .patch(passenger.update)
+  .delete(passenger.delete);
 
 /* ------------------------------------------------------- */
 module.exports = router;
