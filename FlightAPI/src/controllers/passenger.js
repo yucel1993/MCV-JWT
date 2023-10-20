@@ -31,6 +31,10 @@ module.exports = {
   },
 
   create: async (req, res) => {
+    //* If you want to add default value inside of the body
+    //* then use this
+    //* req.body.createdId = req.user._id
+    //* but you have to add in every create model
     /*
             #swagger.tags = ["Passengers"]
             #swagger.summary = "Create Passengers"
