@@ -21,17 +21,7 @@ router
   .put(Reservation.update)
   .patch(Reservation.update)
   .delete(permissions.isAdmin, Reservation.delete);
-
-router.put(
-  "/:id/pushPassenger",
-  permissions.isAdmin,
-  Reservation.pushPassenger
-);
-router.put(
-  "/:id/pullPassenger",
-  permissions.isAdmin,
-  Reservation.pullPassenger
-);
+router.get("/:id/passengers", Reservation.passengers);
 
 /* ------------------------------------------------------- */
 module.exports = router;

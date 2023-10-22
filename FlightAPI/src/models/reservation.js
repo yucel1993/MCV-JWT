@@ -35,8 +35,7 @@ const ReservationSchema = new mongoose.Schema(
     passengers: [
       // push, pull
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Users",
+        type: mongoose.Schema.Types.Mixed, // Allow a mix of data types
       },
     ],
     createdId: {

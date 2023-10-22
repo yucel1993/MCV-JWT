@@ -11,13 +11,7 @@ module.exports = {
     /*
             #swagger.tags = ["Flights"]
             #swagger.summary = "List Flights"
-            #swagger.description = `
-                You can send query with endpoint for search[], sort[], page and limit.
-                <ul> Examples:
-                    <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>
-                    <li>URL/?<b>sort[field1]=1&sort[field2]=-1</b></li>
-                    <li>URL/?<b>page=2&limit=1</b></li>
-                </ul>
+           
             `
         */
 

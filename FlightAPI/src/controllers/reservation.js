@@ -5,6 +5,7 @@
 // Reservation Controller:
 
 const Reservation = require("../models/reservation");
+const Passengers = require("../models/passenger");
 
 module.exports = {
   list: async (req, res) => {
@@ -12,12 +13,18 @@ module.exports = {
             #swagger.tags = ["Reservation"]
             #swagger.summary = "List Reservation"
             #swagger.description = `
-                You can send query with endpoint for search[], sort[], page and limit.
-                <ul> Examples:
-                    <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>
-                    <li>URL/?<b>sort[field1]=1&sort[field2]=-1</b></li>
-                    <li>URL/?<b>page=2&limit=1</b></li>
-                </ul>
+               #swagger.parameters['body'] = {
+                in: 'body',
+                required: true,
+                schema: {
+                    "username": "test",
+                    "password": "1234",
+                    "email": "test@site.com",
+                    "isActive": true,
+                    "isStaff": false,
+                    "isAdmin": false,
+                }
+            }
             `
         */
 
@@ -48,6 +55,33 @@ module.exports = {
             }
         */
 
+    /* Check ID or OBJECT for passengers */
+    let passengerInfos = req.body?.passengers || [];
+    let uniquePassengers = new Set(); // Use a Set to store unique passenger IDs
+
+    for (let passengerInfo of passengerInfos) {
+      Object.assign(passengerInfo, { createdId: req.user?._id });
+
+      if (typeof passengerInfo == "object") {
+        const passenger = await Passengers.findOne({
+          email: passengerInfo.email,
+        });
+        if (!passenger) {
+          const newPassenger = await Passengers.create(passengerInfo);
+          uniquePassengers.add(newPassenger._id);
+        } else {
+          uniquePassengers.add(passenger._id);
+        }
+      } else {
+        uniquePassengers.add(passengerInfo);
+      }
+    }
+
+    /* Check ID or OBJECT for passengers */
+
+    // Convert the Set to an array for req.body.passengers
+    req.body.passengers = Array.from(uniquePassengers);
+
     const data = await Reservation.create(req.body);
 
     res.status(201).send({
@@ -72,21 +106,50 @@ module.exports = {
 
   update: async (req, res) => {
     /*
-            #swagger.tags = ["Reservation"]
-            #swagger.summary = "Update Reservation"
-            #swagger.parameters['body'] = {
-                in: 'body',
-                required: true,
-                schema: {
-                    "username": "test",
-                    "password": "1234",
-                    "email": "test@site.com",
-                    "isActive": true,
-                    "isStaff": false,
-                    "isAdmin": false,
-                }
+        #swagger.tags = ["Reservation"]
+        #swagger.summary = "Update Reservation"
+        #swagger.parameters['body'] = {
+            in: 'body',
+            required: true,
+            schema: {
+                "username": "test",
+                "password": "1234",
+                "email": "test@site.com",
+                "isActive": true,
+                "isStaff": false,
+                "isAdmin": false,
             }
-        */
+        }
+    */
+    /* schema:{
+      $ref: '#/definition/Reservation'  //*You can also take this example
+   }
+   */
+
+    /* Check ID or OBJECT for passengers */
+    let passengerInfos = req.body?.passengers || [];
+    let uniquePassengers = new Set(); // Use a Set to store unique passenger IDs
+
+    for (let passengerInfo of passengerInfos) {
+      if (typeof passengerInfo == "object") {
+        const passenger = await Passengers.findOne({
+          email: passengerInfo.email,
+        });
+        if (!passenger) {
+          const newPassenger = await Passengers.create(passengerInfo);
+          uniquePassengers.add(newPassenger._id);
+        } else {
+          uniquePassengers.add(passenger._id);
+        }
+      } else {
+        uniquePassengers.add(passengerInfo);
+      }
+    }
+
+    /* Check ID or OBJECT for passengers */
+
+    // Convert the Set to an array for req.body.passengers
+    req.body.passengers = Array.from(uniquePassengers);
 
     const data = await Reservation.updateOne({ _id: req.params.id }, req.body);
 
@@ -111,58 +174,20 @@ module.exports = {
     });
   },
 
-  // Addpassengers to passenger.reservations:
-  pushPassenger: async (req, res) => {
+  passengers: async (req, res) => {
     /*
-        #swagger.tags = ["passenger"]
-        #swagger.summary = "Addpassengers to Pizza"
+        #swagger.tags = ["Reservations"]
+        #swagger.summary = "List Passengers of Reservation"
     */
 
-    const passenger = req.body?.passengers; // ObjectId or [ ObjectIds ]
+    const data = await Reservation.findOne({ _id: req.params.id });
+    // console.log(data.passengers)
+    const passengers = await Passengers.find({ _id: { $in: data.passengers } });
 
-    // const data = await Pizza.findOne({ _id: req.params.id })
-    // data.passengers.push(passengers)
-    // await data.save()
-    const data = await passenger.updateOne(
-      { _id: req.params.id },
-      { $push: { passengers: passengers } }
-    );
-    const newData = await Reservation.findOne({ _id: req.params.id }).populate(
-      "passengers"
-    );
-
-    res.status(202).send({
+    res.status(200).send({
       error: false,
-      data,
-      passengersCount: newData.passengers.length,
-      new: newData,
-    });
-  },
-
-  pullPassenger: async (req, res) => {
-    /*
-        #swagger.tags = ["passenger"]
-        #swagger.summary = "Removepassengers from Pizza"
-    */
-
-    constpassengers = req.body?.passengers; // ObjectId
-
-    // const data = await Pizza.findOne({ _id: req.params.id })
-    // data.passengers.pull(passengers)
-    // await data.save()
-    const data = await Pizza.updateOne(
-      { _id: req.params.id },
-      { $pull: { passengers: passengers } }
-    );
-    const newData = await Pizza.findOne({ _id: req.params.id }).populate(
-      "passengers"
-    );
-
-    res.status(202).send({
-      error: false,
-      data,
-      passengersCount: newData.passengers.length,
-      new: newData,
+      // data,
+      passengers,
     });
   },
 };

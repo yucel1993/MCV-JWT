@@ -77,5 +77,41 @@ const FlightSchema = new mongoose.Schema(
   { collection: "Flights", timestamps: true }
 );
 
+const dateToLocaleString = require("../helpers/dateToLocaleString");
+
+FlightSchema.pre("init", function (document) {
+  // document.departureDateString = document.departureDate.toLocaleString(
+  //   "de-DE",
+  //   {
+  //     hour12: false,
+  //   }
+  // );
+  // document.arrivalDateString = document.arrivalDate.toLocaleString("de-DE", {
+  //   hour12: false,
+  // });
+  document.departureDateString = dateToLocaleString(document.departureDate);
+  document.arrivalDateString = dateToLocaleString(document.arrivalDate);
+  document.__v = undefined;
+  const departureDate = new Date(document.departureDate);
+  const arrivalDate = new Date(document.arrivalDate);
+
+  // Calculate the time difference in milliseconds
+  const timeDifference = arrivalDate - departureDate;
+
+  // Convert milliseconds to days
+  const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
+
+  // Calculate the number of hours
+  const hoursDifference = Math.floor(
+    (timeDifference % (1000 * 3600 * 24)) / (1000 * 3600)
+  );
+
+  console.log(
+    `The duration of the flight is approximately ${daysDifference} days and ${hoursDifference} hours.`
+  );
+  document.daysDifference = daysDifference;
+  document.hoursDifference = hoursDifference;
+});
+
 /* ------------------------------------------------------- */
 module.exports = mongoose.model("Flights", FlightSchema);
