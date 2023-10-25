@@ -23,7 +23,20 @@ module.exports = {
             `
         */
 
-    const data = await res.getModelList(Reservation);
+    const data = await res.getModelList(Reservation, {}, "userId");
+
+    res.status(200).send({
+      error: false,
+      details: await res.getModelListDetails(Reservation),
+      data,
+    });
+  },
+
+  onlyClient: async (req, res) => {
+    const userId = req.user._id; // Assuming you have the user's ID in the request (you can adjust this according to your authentication system)
+
+    // Filter reservations for the specific user
+    const data = await Reservation.find({ userId });
 
     res.status(200).send({
       error: false,
@@ -74,6 +87,7 @@ module.exports = {
 
       // Update the associated car's isPublish field to true
       await Car.findByIdAndUpdate(carId, { isPublish: true });
+      await Car.findByIdAndUpdate(carId, { updatedId: userId });
 
       // Get car information
       const carInfo = await Car.findById(carId);
@@ -138,13 +152,72 @@ module.exports = {
             }
         */
 
-    const data = await Reservation.updateOne({ _id: req.params.id }, req.body);
+    const { userId, carId, startDate, endDate, createdId } = req.body;
 
-    res.status(202).send({
-      error: false,
-      data,
-      new: await Reservation.findOne({ _id: req.params.id }),
+    // Check if the user is trying to update a reservation they created
+    if (userId !== createdId) {
+      res.status(403).send({
+        error: true,
+        message:
+          "You can't make an update because you did not reserve this car.",
+      });
+      return; // Stop execution if not authorized
+    }
+
+    // Check for overlapping reservations for the same car
+    const conflicts = await Reservation.find({
+      carId,
+      $or: [
+        {
+          startDate: { $lte: endDate },
+          endDate: { $gte: startDate },
+        },
+      ],
     });
+
+    if (conflicts.length > 0) {
+      res.status(400).send({
+        error: true,
+        message: "This car is not available during the specified dates.",
+      });
+    } else {
+      // If no conflicts, update the reservation
+      const updatedReservation = await Reservation.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+
+      // Update the associated car's isPublish field to true (You might need to do this depending on your requirements)
+
+      // Get car information
+      const carInfo = await Car.findById(carId);
+
+      // Retrieve the user's email based on the userId
+      const user = await Users.findById(userId); // Assuming you have a User model
+
+      if (user) {
+        const userEmail = user.email;
+
+        // Calculate total price based on pricePerDay and rented days
+        const rentedDays =
+          (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+        const totalPrice = carInfo.pricePerDay * rentedDays;
+
+        // Send an email with car information and total price to the user
+        sendEmail(
+          `${carInfo.brand} ${carInfo.model} ${carInfo.year} (Plate Number: ${carInfo.plateNumber})`,
+          rentedDays,
+          totalPrice,
+          userEmail // Replace with the user's email address
+        );
+
+        res.status(202).send({
+          error: false,
+          data: updatedReservation,
+        });
+      }
+    }
   },
 
   delete: async (req, res) => {

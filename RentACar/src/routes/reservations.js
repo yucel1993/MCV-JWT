@@ -13,12 +13,12 @@ const Reservation = require("../controllers/reservations");
 
 router.route("/").get(Reservation.list).post(Reservation.create);
 
+router.route("/onlyClient").get(Reservation.onlyClient);
 router
   .route("/:id")
   .get(Reservation.read)
   .put(Reservation.update)
   .patch(Reservation.update)
   .delete(Reservation.delete);
-
 /* ------------------------------------------------------- */
 module.exports = router;

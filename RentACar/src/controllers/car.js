@@ -48,6 +48,7 @@ module.exports = {
             }
         */
 
+    req.body.updatedId = req.user?._id;
     const data = await Car.create(req.body);
 
     res.status(201).send({
@@ -87,7 +88,7 @@ module.exports = {
                 }
             }
         */
-
+    req.body.updatedId = req.user?._id;
     const data = await Car.updateOne({ _id: req.params.id }, req.body);
 
     res.status(202).send({

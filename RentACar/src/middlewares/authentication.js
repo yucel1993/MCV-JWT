@@ -17,6 +17,6 @@ module.exports = (req, res, next) => {
     (err, userData) => (req.user = userData)
   );
   req.body.createdId = req.user?._id; //* You can assign any data here to use later in the body
-  req.body.updatedId = req.user?._id; //* You can assign any data here to use later in the body
+  // req.body.updatedId = req.user?._id; //* You can assign any data here to use later in the body
   next();
 };
